@@ -8,7 +8,7 @@ import sphinx_rtd_theme
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'JUTPS Documentation'
+project = 'JU Documentation'
 copyright = '2026, Julhiecio'
 author = 'Julhiecio Soares'
 

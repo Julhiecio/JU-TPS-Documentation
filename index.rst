@@ -1,17 +1,24 @@
-.. JUTPS Documentation documentation master file, created by
-   sphinx-quickstart on Wed Jan 28 13:34:31 2026.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+Project Documentation
+=====================
 
-JUTPS Documentation documentation
-=================================
+Overview
+--------
 
-Add your content using ``reStructuredText`` syntax. See the
-`reStructuredText <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
-documentation for details.
+This documentation serves as a centralized reference for JU systems used across different projects.
+Each system is documented independently, but follows shared conventions, patterns, and design principles.
 
+The goal of this documentation is to provide clear, practical, and technical guidance for developers,
+covering architecture, usage, and integration details without unnecessary abstraction.
+
+Use this documentation as a starting point to understand each system and navigate to its specific
+reference when needed.
+
+Available Systems
+-----------------
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 1
+   :caption: Overview
 
+   source/ju/index
+   source/jutps/index

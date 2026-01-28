@@ -39,8 +39,8 @@ fi
 
 # Open browser after short delay
 echo "🌐 Opening documentation in browser..."
-( sleep 2 && xdg-open "$URL" >/dev/null 2>&1 ) &
+( sleep 2 && xdg-open "http://127.0.0.1:9000/" >/dev/null 2>&1 ) &
 
 # Run autobuild
 echo "🔁 Running sphinx-autobuild..."
-sphinx-autobuild ./ ./build/
+sphinx-autobuild ./ ./build/ --port 9000
