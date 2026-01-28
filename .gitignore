@@ -1,6 +1,6 @@
 *.pyc
 *.egg-info
-_build
+build
 _readthedocs_build
 autoapi
 _build_rtd
