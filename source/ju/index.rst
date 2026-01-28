@@ -13,12 +13,10 @@ and used as a standalone module without requiring additional dependencies.
 Its primary purpose is to centralize reusable functionality, reduce duplication, and establish
 consistent patterns across projects.
 
-Documentation Structure
------------------------
+Features
+--------
 
 .. toctree::
    :maxdepth: 1
 
-   getting_started
-   architecture
-   features
+   features/health

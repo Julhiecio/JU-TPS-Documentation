@@ -17,4 +17,3 @@ Documentation Structure
    :maxdepth: 1
 
    getting_started
-   features
