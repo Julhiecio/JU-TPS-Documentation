@@ -1,0 +1,13 @@
+*.pyc
+*.egg-info
+_build
+_readthedocs_build
+autoapi
+_build_rtd
+.idea/
+.venv
+.tox
+.cache
+.python-version
+dist
+tags
