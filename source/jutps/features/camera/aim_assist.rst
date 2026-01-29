@@ -1,10 +1,12 @@
 Aim Assist
 ==========
 
-.. image:: images/aim_assist.png
+.. image:: images/aim_assist.gif
 
 Overview
 --------
+
+.. image:: images/aim_assist.png
 
 The JUTPS Aim Assist system provides automatic camera assistance to help players
 focus targets more easily during aiming or firing.
@@ -99,6 +101,8 @@ Each target entry contains:
 Target Priority
 ~~~~~~~~~~~~~~~
 
+.. image:: images/aim_assist_targets_priority.gif
+
 Targets are processed **in order**.
 
 If multiple objects are in front of the camera:
@@ -126,6 +130,8 @@ Obstacle detection prevents aiming through walls or large objects.
 
 Out of View Tolerance
 ~~~~~~~~~~~~~~~~~~~~~
+
+.. image:: images/aim_assist_tolerance.gif
 
 **Out Of View Tolerance**
    Defines how long the system will keep following a target
