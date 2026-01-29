@@ -186,8 +186,6 @@ comes from weapons, projectiles, or physics interactions.
 
    This is useful when the hit position is far from the attacker and additional context is needed.
 
----
-
 Optional fields can be left unset when the extra context is not required.
 Systems that rely on this data should always validate it before use.
 
@@ -250,3 +248,157 @@ While invincible, all incoming damage is ignored.
 
    This guarantees compatibility with custom health systems and
    keeps systems decoupled and reusable.
+
+
+Damage Score
+~~~~~~~~~~~~
+
+In some scenarios, it is useful to react whenever **any health system** in the game takes damage.
+For example: score systems, analytics, combat logs, or global effects.
+
+JU provides a global event called ``IHealth.OnAnyDamaged`` for this purpose.
+
+.. warning::
+
+   ``OnAnyDamaged`` is **only available on Unity version 6000.3 or newer**.
+
+   Attempting to use this feature on older Unity versions will result in
+   compilation errors.
+
+This event is triggered whenever **any object implementing ``IHealth``**
+receives damage.
+
+Example: logging score when an enemy is damaged by the player.
+
+.. code-block:: csharp
+
+   using JU;
+   using JUTPS;
+   using UnityEngine;
+
+   public class TestScore : MonoBehaviour
+   {
+       private static bool _editorSetupDone;
+
+       public static int Score { get; private set; }
+
+       private void Start()
+       {
+           IHealth.OnAnyDamaged += OnDamaged;
+
+   #if UNITY_EDITOR
+           if (!_editorSetupDone)
+           {
+               _editorSetupDone = true;
+               UnityEditor.EditorApplication.playModeStateChanged += mode =>
+               {
+                   if (mode == UnityEditor.PlayModeStateChange.ExitingPlayMode)
+                       Score = 0;
+               };
+           }
+   #endif
+       }
+
+       private void OnDestroy()
+       {
+           IHealth.OnAnyDamaged -= OnDamaged;
+       }
+
+       // Called when any IHealth receives damage.
+       private void OnDamaged(IHealth.DamageResultInfo damageInfo)
+       {
+           int score = (int)damageInfo.RealDamage;
+
+           if (damageInfo.DamagedObject is MonoBehaviour healthComponent)
+           {
+               GameObject playerGameObject = JUGameManager.PlayerController.gameObject;
+
+               // Target was already dead, ignore.
+               if (damageInfo.DamagedObject.IsDead && !damageInfo.WasKilled)
+                   return;
+
+               // Player took damage, no score.
+               if (playerGameObject == healthComponent.gameObject)
+                   return;
+
+               // Only enemies generate score.
+               if (!healthComponent.gameObject.CompareTag("Enemy"))
+                   return;
+
+               // Damage was not caused by the player.
+               if (damageInfo.DamageOwner != playerGameObject)
+                   return;
+           }
+
+           // Bonus score if the target was killed.
+           if (damageInfo.WasKilled)
+               score *= 2;
+
+           Score += score;
+           Debug.Log($"Score: +{score} ---- Total: {Score}");
+       }
+   }
+
+This approach allows score systems to remain completely decoupled from
+specific enemy or health implementations.
+
+Armor/Shield powerups
+~~~~~~~~~~~~~~~~~~~~~
+
+JU allows damage to be modified **before it is applied** using
+``SubscribeOnBeforeDamaged``.
+
+This is commonly used for armor, buffs, debuffs, or temporary effects.
+
+The callback receives a ``DamageInfo`` structure and must return the modified
+damage information.
+
+Example: reduce all incoming damage using a simple multiplier.
+
+.. code-block:: csharp
+
+   using JU;
+   using UnityEngine;
+
+   public class SimpleArmor : MonoBehaviour
+   {
+       [Range(0f, 1f)]
+       [SerializeField] private float damageMultiplier = 0.5f;
+
+       private IHealth _health;
+
+       private void Awake()
+       {
+           _health = GetComponent<IHealth>();
+       }
+
+       private void OnEnable()
+       {
+           _health.SubscribeOnBeforeDamaged(OnBeforeDamaged);
+       }
+
+       private void OnDisable()
+       {
+           _health.UnsubscribeOnBeforeDamaged(OnBeforeDamaged);
+       }
+
+       private IHealth.DamageInfo OnBeforeDamaged(IHealth.DamageInfo damageInfo)
+       {
+           damageInfo.Damage *= damageMultiplier;
+           return damageInfo;
+       }
+   }
+
+While this component is enabled, all incoming damage is multiplied by the
+configured value.
+
+For example:
+- ``0.5`` → 50% damage reduction
+- ``1.0`` → no reduction
+- ``0.0`` → damage completely blocked
+
+.. note::
+
+   This logic runs **before** the health system applies damage,
+   allowing systems to alter damage without depending on a specific
+   health implementation.
