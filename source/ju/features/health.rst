@@ -193,6 +193,7 @@ Systems that rely on this data should always validate it before use.
 Adding Health
 ~~~~~~~~~~~~~
 
+
 To restore health, use ``AddHealth``.
 
 .. code-block:: csharp
@@ -203,18 +204,22 @@ To restore health, use ``AddHealth``.
        Source = gameObject
    });
 
-Health is automatically clamped and will not exceed the maximum value.
+**HealthAdded** defines how much health will be restored.  
+The value is automatically clamped and will never exceed the maximum health.
 
-Killing an NPC Instantly
-~~~~~~~~~~~~~~~~~~~~~~~~
+**Source** represents the object that is providing the health.
 
-To instantly kill an NPC, apply damage equal to its current health.
+This can be:
+- A player or character
+- A healing item
+- A skill, ability, or buff
+- Any object responsible for the healing action
 
-.. code-block:: csharp
+The source is optional, but strongly recommended when the healing comes from
+another system. It allows other systems (UI, effects, logs, analytics, gameplay
+rules) to know **who caused the healing**.
 
-   health.Kill();
-
-This guarantees the death logic and events are triggered correctly.
+If the source is not relevant, it can be left unset or ``null``.
 
 Temporary Invincibility
 ~~~~~~~~~~~~~~~~~~~~~~~~
