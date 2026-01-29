@@ -10,10 +10,10 @@ into different types of projects.
 
 The system focuses on providing a solid and consistent movement features.
 
-Documentation Structure
------------------------
+Features
+--------
 
 .. toctree::
    :maxdepth: 1
 
-   getting_started
+   features/camera/aim_assist
