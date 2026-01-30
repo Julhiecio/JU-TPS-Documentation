@@ -407,3 +407,173 @@ For example:
    This logic runs **before** the health system applies damage,
    allowing systems to alter damage without depending on a specific
    health implementation.
+
+Creating Custom Health Systems
+------------------------------
+
+JU allows you to create **custom health systems** by implementing the ``IHealth`` interface directly.
+
+This is useful when:
+
+* You need very specific health rules
+* You want lightweight or experimental health logic
+* You want completely different behavior from ``JUHealth``
+
+The only requirement is that the system fully implements ``IHealth`` so it remains compatible
+with almost all JU systems (damage, UI, score, abilities, etc.).
+
+Below is a minimal and simple example of a custom health system.
+
+
+``CustomHealth`` is a basic health implementation that supports:
+
+* Health and Max Health
+* Damage and healing
+* Death state
+* Invincibility
+* Health events
+* Damage modification via ``SubscribeOnBeforeDamaged``
+
+It intentionally **does not** include:
+
+* Regeneration
+* Effects
+* Editor-only features
+* Extra gameplay rules
+
+.. code-block:: csharp
+
+    using System.Collections.Generic;
+    using JU;
+    using UnityEngine;
+    using UnityEngine.Events;
+
+    public class CustomHealth : MonoBehaviour, IHealth
+    {
+        [SerializeField] private float health = 100f;
+
+        [SerializeField] private float maxHealth = 100f;
+        [SerializeField] private bool isInvencible;
+
+        private readonly HashSet<IHealth.BeforeDamagedAction> beforeDamageCallbacks =
+            new HashSet<IHealth.BeforeDamagedAction>();
+
+        public event UnityAction<IHealth.DamageResultInfo> OnDamaged;
+        public event UnityAction<IHealth.AddedHealthInfo> OnHealthAdded;
+        public event UnityAction OnResetHealth;
+        public event UnityAction OnDeath;
+
+        public bool IsDead { get; private set; }
+
+        public float Health => health;
+        public float MaxHealth => maxHealth;
+        public float NormalizedHealth => MaxHealth > 0 ? Health / MaxHealth : 0f;
+
+        public bool IsInvencible
+        {
+            get => isInvencible;
+            set => isInvencible = value;
+        }
+
+        public IHealth.DamageResultInfo DoDamage(float damage)
+        {
+            return DoDamage(new IHealth.DamageInfo { Damage = damage });
+        }
+
+        public IHealth.DamageResultInfo DoDamage(IHealth.DamageInfo info)
+        {
+            var result = new IHealth.DamageResultInfo
+            {
+                SuggestiveDamage = info.Damage,
+                HitPosition = info.HitPosition,
+                HitDirection = info.HitDirection,
+                HitOriginPosition = info.HitOriginPosition,
+                DamageOwner = info.DamageOwner,
+                DamagedObject = this
+            };
+
+            if (IsDead || IsInvencible)
+            {
+                result.RealDamage = 0;
+                result.WasKilled = false;
+                return result;
+            }
+
+            foreach (var callback in beforeDamageCallbacks)
+            {
+                if (callback != null)
+                    info = callback(info);
+            }
+
+            float realDamage = Mathf.Max(info.Damage, 0f);
+            health -= realDamage;
+
+            result.RealDamage = realDamage;
+
+            if (health <= 0f)
+            {
+                health = 0f;
+                IsDead = true;
+                result.WasKilled = true;
+                OnDeath?.Invoke();
+            }
+
+            OnDamaged?.Invoke(result);
+
+
+    #if UNITY_6000_3_OR_NEWER
+            IHealth.OnAnyDamaged?.Invoke(result);
+    #endif
+
+            return result;
+        }
+
+        public void Kill()
+        {
+            if (IsDead)
+                return;
+
+            IsDead = true;
+            isInvencible = false;
+            health = 0;
+            OnDeath?.Invoke();
+        }
+
+        public void AddHealth(IHealth.AddedHealthInfo info)
+        {
+            if (IsDead)
+                return;
+
+            health = Mathf.Clamp(health + info.HealthAdded, 0f, MaxHealth);
+            OnHealthAdded?.Invoke(info);
+        }
+
+        public void SetHealth(float value)
+        {
+            health = Mathf.Clamp(value, 0f, MaxHealth);
+            IsDead = health <= 0f;
+        }
+
+        public void SetMaxHealth(float value)
+        {
+            maxHealth = Mathf.Max(1f, value);
+            health = Mathf.Clamp(health, 0f, maxHealth);
+        }
+
+        public void ResetHealth()
+        {
+            health = MaxHealth;
+            IsDead = false;
+            OnResetHealth?.Invoke();
+        }
+
+        public void SubscribeOnBeforeDamaged(IHealth.BeforeDamagedAction callback)
+        {
+            beforeDamageCallbacks.Add(callback);
+        }
+
+        public void UnsubscribeOnBeforeDamaged(IHealth.BeforeDamagedAction callback)
+        {
+            beforeDamageCallbacks.Remove(callback);
+        }
+    }
