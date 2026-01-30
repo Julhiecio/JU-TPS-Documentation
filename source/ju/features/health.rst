@@ -552,6 +552,9 @@ It intentionally **does not** include:
         {
             health = Mathf.Clamp(value, 0f, MaxHealth);
             IsDead = health <= 0f;
+
+            if (IsDead)
+                OnDeath?.Invoke();
         }
 
         public void SetMaxHealth(float value)
