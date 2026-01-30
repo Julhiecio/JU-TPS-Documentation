@@ -3,7 +3,7 @@ Health System
 
 .. contents::
    :local:
-   :depth: 3
+   :depth: 4
 
 
 JU provides a shared health system composed of two main elements: ``IHealth`` and ``JUHealth``.
@@ -106,13 +106,13 @@ a specific health implementation.
 
 
 How To...
----------
+~~~~~~~~~
 
 This section provides practical examples of how to interact with JU health systems
 using ``IHealth``. All health-related interactions should always go through this interface.
 
 Getting the Health System
-~~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Any object that supports health exposes it through ``IHealth``.
 Always retrieve the health system using ``GetComponent<IHealth>()``.
@@ -124,7 +124,7 @@ Always retrieve the health system using ``GetComponent<IHealth>()``.
 This works for ``JUHealth`` and for any custom health system that implements ``IHealth``.
 
 Applying Damage
-~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^
 
 To apply damage, call ``DoDamage``.
 
@@ -191,7 +191,7 @@ Systems that rely on this data should always validate it before use.
 
 
 Adding Health
-~~~~~~~~~~~~~
+^^^^^^^^^^^^^
 
 
 To restore health, use ``AddHealth``.
@@ -222,7 +222,7 @@ rules) to know **who caused the healing**.
 If the source is not relevant, it can be left unset or ``null``.
 
 Temporary Invincibility
-~~~~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^^^
 
 Invincibility can be toggled using ``IsInvencible``.
 
@@ -256,7 +256,7 @@ While invincible, all incoming damage is ignored.
 
 
 Damage Score
-~~~~~~~~~~~~
+^^^^^^^^^^^^
 
 In some scenarios, it is useful to react whenever **any health system** in the game takes damage.
 For example: score systems, analytics, combat logs, or global effects.
@@ -348,7 +348,7 @@ This approach allows score systems to remain completely decoupled from
 specific enemy or health implementations.
 
 Armor/Shield powerups
-~~~~~~~~~~~~~~~~~~~~~
+^^^^^^^^^^^^^^^^^^^^^
 
 JU allows damage to be modified **before it is applied** using
 ``SubscribeOnBeforeDamaged``.

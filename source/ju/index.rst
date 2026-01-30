@@ -17,6 +17,6 @@ Features
 --------
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 5
 
    features/health
