@@ -17,3 +17,4 @@ Features
    :maxdepth: 1
 
    features/camera/aim_assist
+   features/humanoid_ai/overview
