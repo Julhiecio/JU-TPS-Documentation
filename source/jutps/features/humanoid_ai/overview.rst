@@ -24,9 +24,10 @@ Guide
 -----
 
 .. toctree::
-    :maxdepth: 1
+    :maxdepth: 2
 
     models/builtin_models
-    how_to/how_to
+    actions/overview
+    sensors/overview
 
 

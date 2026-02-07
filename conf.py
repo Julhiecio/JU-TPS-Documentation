@@ -32,5 +32,5 @@ html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 html_static_path = ['_static']
 
 html_theme_options = {
-    "navigation_depth": 5,
+    "navigation_depth": 6,
 }

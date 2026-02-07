@@ -1,5 +1,0 @@
-Zombie AI Model
-===============
-
-Description
------------

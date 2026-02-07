@@ -1,5 +1,0 @@
-Patrol AI Model
-===============
-
-Description
------------
