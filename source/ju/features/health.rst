@@ -37,6 +37,11 @@ commonly used by characters, enemies, and any object that can receive damage.
 It is responsible for controlling the current health value, the maximum health, and determining
 whether the object is alive or dead.
 
+Protection
+~~~~~~~~~~
+
+A damage reduction amount. Useful for simple shields when the damage must be decreased or blocked.
+
 Health and Max Health
 ~~~~~~~~~~~~~~~~~~~~~
 
@@ -254,6 +259,53 @@ While invincible, all incoming damage is ignored.
    This guarantees compatibility with custom health systems and
    keeps systems decoupled and reusable.
 
+Damage Protection
+^^^^^^^^^^^^^^^^^
+
+``IHealth`` exposes a **Protection** property that represents a **flat damage reduction value**.
+
+Protection reduces incoming damage **before it is applied to health**, acting as a simple and permanent
+damage mitigation layer.
+
+- Protection is applied automatically by the health system
+- It reduces damage by a fixed amount
+- It never heals or increases health
+- Damage will never go below zero
+
+Example:
+
+- Incoming damage: ``30``
+- Protection: ``10``
+- Final damage applied: ``20``
+
+If Protection is greater than or equal to the incoming damage, the damage is blocked.
+
+Setting Protection
+..................
+
+Protection can be set directly on the health system:
+
+.. code-block:: csharp
+
+   IHealth health = GetComponent<IHealth>();
+   health.Protection = 15f;
+
+This value can be changed at runtime to represent:
+
+- Natural armor
+- Shields
+- Difficulty scaling
+- Passive buffs or debuffs
+
+Protection vs Damage Modifiers
+..............................
+
+Protection is a **simple flat reduction** applied by the health system itself.
+
+For more complex behavior (percentage reduction, conditional armor, elemental resistance, buffs, debuffs),
+use ``SubscribeOnBeforeDamaged`` instead.
+
+Both systems can be used together when needed.
 
 Damage Score
 ^^^^^^^^^^^^
