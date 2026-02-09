@@ -17,6 +17,7 @@ Features
 --------
 
 .. toctree::
-   :maxdepth: 5
+   :maxdepth: 2
 
-   features/health
+   features/health/health
+   features/saveload/saveload
