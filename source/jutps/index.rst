@@ -14,7 +14,8 @@ Features
 --------
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
 
    features/camera/aim_assist
    features/humanoid_ai/overview
+   features/saveload/overview

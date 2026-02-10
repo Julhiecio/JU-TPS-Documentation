@@ -1,7 +1,11 @@
 Save Load
 =========
 
-Description
+.. contents::
+   :local:
+   :depth: 2
+
+JU Save Load
 -----------
 
 Generic save/load system for Unity.
@@ -13,10 +17,10 @@ Generic save/load system for Unity.
 - Data is divided into **Global** and **Per-Scene** values.
 
 Save File Location
-------------------
+~~~~~~~~~~~~~~~~~~
 
 PC (Editor / Standalone)
-^^^^^^^^^^^^^^^^^^^^^^^
+........................
 
 Save folder::
 
@@ -28,7 +32,7 @@ Files:
 - ``Save.backup`` – backup save file
 
 Android
-^^^^^^^
+.......
 
 Save folder::
 
@@ -40,10 +44,10 @@ Files:
 - ``Save.backup``
 
 How To
-------
+~~~~~~
 
 Set and Get Scene Values
------------------------
+........................
 
 Scene values are stored per scene.  
 The **scene name should be obtained dynamically** using ``gameObject.scene.name``.
@@ -54,7 +58,7 @@ This avoids:
 - Hardcoded dependencies
 
 Set a value
-^^^^^^^^^^^
+...........
 
 .. code-block:: csharp
 
@@ -76,7 +80,7 @@ Set a value
     }
 
 Get a value
-^^^^^^^^^^^
+...........
 
 .. code-block:: csharp
 
@@ -86,8 +90,8 @@ Get a value
     Vector3 position = JUSaveLoad.GetSceneValue(sceneName, "PlayerPosition", Vector3.zero);
     Quaternion rotation = JUSaveLoad.GetSceneValue(sceneName, "PlayerRotation", Quaternion.identity);
 
-TryGet variant
-^^^^^^^^^^^^^^
+Try get a value
+...............
 
 .. code-block:: csharp
 
@@ -99,37 +103,31 @@ TryGet variant
     }
 
 Set and Get Global Values
-------------------------
+.........................
 
 Global values are shared between all scenes and do not require a scene name.
-
-Set a global value
-^^^^^^^^^^^^^^^^^^
 
 .. code-block:: csharp
 
     JUSaveLoad.SetGlobalValue("Coins", 250);
     JUSaveLoad.Save();
 
-Get a global value
-^^^^^^^^^^^^^^^^^^
-
 .. code-block:: csharp
 
     int coins = JUSaveLoad.GetGlobalValue("Coins", 0);
 
 Saving and Loading
-------------------
+~~~~~~~~~~~~~~~~~~
 
 Save
-^^^^
+....
 
 .. code-block:: csharp
 
     JUSaveLoad.Save();
 
 Load
-^^^^
+....
 
 Manual loading is usually **not required**.
 
@@ -139,7 +137,7 @@ The save file is automatically loaded when:
 - Checking if a value exists
 
 Force Load
-^^^^^^^^^^
+~~~~~~~~~~
 
 Use this to discard runtime changes and reload data from disk.
 
@@ -148,10 +146,10 @@ Use this to discard runtime changes and reload data from disk.
     JUSaveLoad.Load(force: true);
 
 Delete Save Data
-----------------
+~~~~~~~~~~~~~~~~
 
 Delete a scene value
-^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: csharp
 
@@ -159,7 +157,7 @@ Delete a scene value
     JUSaveLoad.DeleteSceneValue(sceneName, "PlayerLife");
 
 Delete all data from a scene
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: csharp
 
@@ -167,26 +165,26 @@ Delete all data from a scene
     JUSaveLoad.DeleteSceneData(sceneName);
 
 Delete a global value
-^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: csharp
 
     JUSaveLoad.DeleteGlobalValue("Coins");
 
 Delete all saves
-^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~
 
 .. code-block:: csharp
 
     JUSaveLoad.DeleteAllSaves();
 
 Saving Component Data
----------------------
+~~~~~~~~~~~~~~~~~~~~~
 
 You should save **component variables**, not components or GameObjects.
 
 Correct approach
-^^^^^^^^^^^^^^^^
+................
 
 .. code-block:: csharp
 
@@ -217,7 +215,7 @@ Correct approach
     }
 
 Why You Should NOT Save Components or GameObjects
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.................................................
 
 - Unity components are not pure data.
 - They depend on scene hierarchy and engine state.
@@ -234,7 +232,7 @@ Always save **data only**:
 - data-only serializable classes
 
 Custom Data Types Support
--------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
 By default, the save system supports common Unity types such as:
 
@@ -247,7 +245,7 @@ By default, the save system supports common Unity types such as:
 These types work because they have **custom serialization bridges** registered internally.
 
 Why Custom Types Are Needed
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...........................
 
 Newtonsoft.Json cannot serialize some Unity or engine-specific types directly.
 
@@ -256,7 +254,7 @@ To support these types, the system uses:
 - Custom ``JsonConverter`` implementations
 
 Example: Vector3 Support
-^^^^^^^^^^^^^^^^^^^^^^^^
+........................
 
 Vector3 is not serialized directly.  
 Instead, it is converted into a plain data struct.
@@ -294,7 +292,7 @@ A corresponding ``JsonConverter`` handles the conversion between:
 - ``JUVector3`` → ``Vector3`` (load)
 
 Adding Support for New Types
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To support a new type:
 
@@ -303,7 +301,7 @@ To support a new type:
 3. Register the converter using ``AddTypeConverter``
 
 Registering a converter
-^^^^^^^^^^^^^^^^^^^^^^^
+.......................
 
 .. code-block:: csharp
 
@@ -319,12 +317,104 @@ Registering a converter
     }
 
 Rules for Custom Types
-^^^^^^^^^^^^^^^^^^^^^^
+......................
 
 - Do not reference Unity objects
 - Do not store scene or runtime state
 - Use only serializable fields
-- Treat custom types as pure data
 
-This keeps the save file stable and engine-independent.
+.. _JU Save Load Component:
 
+JU Save Load Component
+----------------------
+
+Overview
+~~~~~~~~
+
+``JUSaveLoadComponent`` is a **reusable base class** designed to be inherited by
+any ``Monobehavior`` that handle save load.
+
+It already contains all the base required to **set and load values**
+using the **JU Save Load**, like load data on start, save on destroy and ensure
+syncronization during save/load.
+
+You can write your own save/load system for ``Monobehavior`` too, but you need to handle syncronization, keys generation and
+save load manually on this case.
+
+``JUSaveLoadComponent`` does **not** contain gameplay logic.
+Its responsibility is only to handle *how data is saved and restored*.
+
+Basic Usage
+~~~~~~~~~~~
+
+To create a save component:
+
+.. warning::
+    Ensure you **DO NOT** have different objects with same components and **SAME NAME** because
+    this can result in data loss.
+
+    All objects **MUST HAVE** different names.
+
+.. code-block:: csharp
+
+    using JU.SaveLoad;
+    using UnityEngine;
+
+    public class MySaveComponent : JUSaveLoadComponent
+    {
+        private const string VALUE_KEY = "MyValue";
+
+        public override void Save()
+        {
+            base.Save();
+            SetValue(VALUE_KEY, 42);
+        }
+
+        public override void Load()
+        {
+            base.Load();
+            int value = GetValue(VALUE_KEY, 0);
+            Debug.Log(value);
+        }
+    }
+
+Synchronizing data during save load
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+All components that inherit from ``JUSaveLoadComponent`` are designed to work
+together.
+When the save is triggered by ``JUSaveLoadManager.SaveOnFile()``:
+
+- All components execute ``Save()``
+- Each component writes its data to ``JUSaveLoad``
+- The save file is written only after all components are synchronized
+
+This guarantees that save and load operations remain **synchronized**, even when multiple components are involved.
+
+.. _JU Save Load Manager:
+
+JU Save Load Manager
+--------------------
+
+Description
+^^^^^^^^^^^
+
+``JUSaveLoadManager`` is a **centralized save coordinator** for the **JU Save Load**.
+
+Its responsibility is to:
+
+- Trigger ``Save()`` on all components that inherit from ``JUSaveLoadComponent``.
+- Ensure all data is synchronized before writing the save file
+- Write the save file **only once** instead of call ``JUSaveLoad.Save()`` on each component.
+
+When to Use
+^^^^^^^^^^^
+
+Use ``JUSaveLoadManager.SaveOnFile()`` when:
+
+- Saving from menus
+- Saving on checkpoints
+- Saving on application quit
+- Saving before scene transitions
+
+This ensures all systems remain in sync.
