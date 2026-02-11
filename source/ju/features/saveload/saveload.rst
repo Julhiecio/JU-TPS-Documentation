@@ -417,4 +417,62 @@ Use ``JUSaveLoadManager.SaveOnFile()`` when:
 - Saving on application quit
 - Saving before scene transitions
 
-This ensures all systems remain in sync.
+JU Save Load Mode Component
+---------------------------
+
+By default, all ``JUSaveLoadComponent`` saves on Scene. But it's possible to
+save all data globally if necessary adding the ``JUSaveLoadModeComponent`` to some gameObject
+(for example: *GameManager*, *SaveManager*, or *LevelManager*) and setting ``Mode`` property to `Scene`.
+
+
+Save Load Components
+--------------------
+
+They are optional utilities designed to simplify common save mechanics.
+All components listed below integrate with :ref:`JU Save Load Manager`.
+
+.. contents::
+   :local:
+   :depth: 1
+
+JU Auto Save
+~~~~~~~~~~~
+
+Automatically writes the save file at a fixed time interval.
+
+Usage
+.....
+
+1. Add **JU Auto Save** to any active GameObject in the scene  
+   (for example: *GameManager*, *SaveManager*, or *LevelManager*)
+2. Set the time interval to save.
+
+.. warning::
+    Multiple instances are not recommended.
+
+JU Save Point Trigger
+~~~~~~~~~~~~~~~~~~~~
+
+Saves the game when the player enters a trigger collider.
+
+This component acts as a **checkpoint system**, writing the save file when
+a specific object (usually the player) enters a trigger collider.
+
+Usage
+.....
+
+1. Add a **Collider** to a gameObject and enable **Is Trigger**
+2. Add **JU Save Point Trigger** to this GameObject
+3. Set the **Player Tag** (default: ``Player``) and ensure the player GameObject uses the same tag.
+
+JU Save Load Destroyed Object
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+This component ensures that once an object is destroyed,
+it will **remain destroyed** when the scene is loaded again.
+
+Usage
+.....
+
+1. Add **JU Save Load Destroyed Object** to the GameObject
+2. Ensure the GameObject has a **unique name** in the scene
