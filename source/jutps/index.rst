@@ -18,4 +18,6 @@ Features
 
    features/camera/aim_assist
    features/humanoid_ai/overview
+   features/respawn_controller/respawn_controller
    features/saveload/overview
+ 
