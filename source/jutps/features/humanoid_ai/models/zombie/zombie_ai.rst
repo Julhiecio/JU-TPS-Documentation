@@ -13,6 +13,29 @@ the zombie patrols an area, detects targets using vision and hearing, chases the
 
 The Zombie AI does not use ranged combat or advanced tactics.
 
+Zombie AI
+~~~~~~~~~
+
+.. image:: images/zombie_ai_general.png
+    :scale: 100%
+
+- Head:
+    A transform used by :doc:`Field Of View sensor <../../sensors/field_of_view/field_of_view_sensor>` to find targets.
+- Override Target:
+    A collider used as target by this AI. If assigned, the AI will only try to attack the target, ignoring patrolling state.
+
+Navigation Settings
+~~~~~~~~~~~~~~~~~~~
+
+Allows you to use **Navmesh** or not. If Mode is set to **Simple**, the AI will not avoid obstacles using NavMesh.
+
+General
+~~~~~~~
+
+Contains general AI behavior settings.
+
+- Search Last Target Time: If the AI loses the target that was attacking, will try search for the specified time before go back **patrolling** state.
+
 State Summary
 -------------
 
