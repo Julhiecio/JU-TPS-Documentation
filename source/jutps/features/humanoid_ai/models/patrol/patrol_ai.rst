@@ -9,6 +9,32 @@ Overview
 The Patrol AI is a **generic patrol AI** designed for common NPC behaviors such as guards, soldiers, and patrolling enemies.
 Its main responsibility is to patrol an area, react to stimuli, engage targets when detected, and return to patrol when the situation is resolved.
 
+
+Patrol AI
+---------
+
+.. image:: images/patrol_ai_general.png
+    :scale: 100%
+
+- Head:
+    A transform used by :doc:`Field Of View sensor <../../sensors/field_of_view/field_of_view_sensor>` to find targets.
+- Override Target:
+    A collider used as target by this AI. If assigned, the AI will only try to attack the target, ignoring patrolling state.
+
+Navigation Settings
+~~~~~~~~~~~~~~~~~~~
+
+Allows you to use **Navmesh** or not. If Mode is set to **Simple**, the AI will not avoid obstacles using NavMesh.
+
+General
+~~~~~~~
+
+Contains general AI behavior settings.
+
+- Max Search Target Time: If the AI loses the target that was attacking, will try search for the specified time before go back **patrolling** state.
+- Lose Target Delay: If the target escape from field of view, the AI can hunt the target for some time and after this will begin to searching for it again.
+- Alert Max Time: After loses a target, the AI will stais into a "aggressive" mode. If the AI find the target again or hear something while on "aggressive" time, the AI will attack directly instead of the common behavior go to the location and specify searching for a target.
+
 State Summary
 -------------
 
